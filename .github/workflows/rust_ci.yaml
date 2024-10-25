@@ -1,0 +1,33 @@
+name: Rust CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build_and_test:
+    name: Rust project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt clippy
+
+      - name: Rustfmt
+        run: cargo fmt --check
+
+      - name: Cargo test
+        run: cargo test
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Cargo build
+        run: wasm-pack build --target web --out-dir www/dist
+
+      - name: Clippy
+        run: cargo clippy
