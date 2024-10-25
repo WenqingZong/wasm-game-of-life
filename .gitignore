@@ -1,6 +1,7 @@
 # Generated
 /target
 Cargo.lock
+/www/dist/
 
 # IDEs
 .idea/
