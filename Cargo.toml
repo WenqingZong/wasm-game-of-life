@@ -8,3 +8,6 @@ wasm-bindgen = "0.2.95"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.45"

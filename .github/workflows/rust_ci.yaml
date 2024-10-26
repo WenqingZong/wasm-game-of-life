@@ -20,13 +20,16 @@ jobs:
       - name: Rustfmt
         run: cargo fmt --check
 
-      - name: Cargo test
-        run: cargo test
-
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
-      - name: Cargo build
+      - name: Test
+        run: |
+          cargo test
+          wasm-pack test --node --headless
+
+
+      - name: Build
         run: wasm-pack build --target web --out-dir www/dist
 
       - name: Clippy

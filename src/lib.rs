@@ -71,6 +71,22 @@ impl Universe {
         self.cells.as_ptr()
     }
 
+    /// Set the width of the universe.
+    ///
+    /// Resets all cells to the dead state.
+    pub fn set_width(&mut self, width: usize) {
+        self.width = width;
+        self.cells = (0..width * self.height).map(|_| Cell::Dead).collect();
+    }
+
+    /// Set the height of the universe.
+    ///
+    /// Resets all cells to the dead state.
+    pub fn set_height(&mut self, height: usize) {
+        self.height = height;
+        self.cells = (0..self.width * height).map(|_| Cell::Dead).collect();
+    }
+
     pub fn render(&self) -> String {
         self.to_string()
     }
@@ -131,5 +147,21 @@ impl Universe {
         }
 
         self.cells = next;
+    }
+}
+
+impl Universe {
+    /// Get the dead and alive values of the entire universe.
+    pub fn get_cells(&self) -> &[Cell] {
+        &self.cells
+    }
+
+    /// Set cells to be alive in a universe by passing the row and column
+    /// of each cell as an array.
+    pub fn set_cells(&mut self, cells: &[(usize, usize)]) {
+        for (row, col) in cells.iter().cloned() {
+            let idx = self.get_index(row, col);
+            self.cells[idx] = Cell::Alive;
+        }
     }
 }
