@@ -21,13 +21,15 @@ jobs:
         run: cargo fmt --check
 
       - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+        run: |
+          rustup target add wasm32-unknown-unknown
+          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+          cargo install wasm-bindgen-cli
 
       - name: Test
         run: |
           cargo test
           wasm-pack test --node
-
 
       - name: Build
         run: wasm-pack build --target web --out-dir www/dist
