@@ -1,5 +1,15 @@
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use wasm_bindgen::prelude::*;
+use web_sys::console::log_1;
+
+mod utils;
+
+// A macro to provide `println!(..)`-style syntax for `console.log` logging.
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        log_1(&format!( $( $t )* ).into());
+    }
+}
 
 #[wasm_bindgen]
 #[repr(u8)]
@@ -7,6 +17,15 @@ use wasm_bindgen::prelude::*;
 pub enum Cell {
     Dead = 0,
     Alive = 1,
+}
+
+impl Cell {
+    fn toggle(&mut self) {
+        *self = match *self {
+            Cell::Dead => Cell::Alive,
+            Cell::Alive => Cell::Dead,
+        }
+    }
 }
 
 #[wasm_bindgen]
@@ -39,6 +58,8 @@ impl Default for Universe {
 #[wasm_bindgen]
 impl Universe {
     pub fn new() -> Universe {
+        utils::set_panic_hook();
+
         let width = 64;
         let height = 64;
 
@@ -87,6 +108,11 @@ impl Universe {
         self.cells = (0..self.width * height).map(|_| Cell::Dead).collect();
     }
 
+    pub fn toggle_cell(&mut self, row: usize, column: usize) {
+        let idx = self.get_index(row, column);
+        self.cells[idx].toggle();
+    }
+
     pub fn render(&self) -> String {
         self.to_string()
     }
@@ -121,6 +147,14 @@ impl Universe {
                 let cell = self.cells[idx];
                 let live_neighbors = self.live_neighbor_count(row, col);
 
+                // log!(
+                //     "cell[{},{}] is initially {:?} and has {} living neighbors",
+                //     row,
+                //     col,
+                //     cell,
+                //     live_neighbors,
+                // );
+
                 let next_cell = match (cell, live_neighbors) {
                     // Rule 1: Any live cell with fewer than two live neighbours dies, as if caused
                     // by underpopulation.
@@ -141,6 +175,8 @@ impl Universe {
                     // All other cells remain in the same state.
                     (otherwise, _) => otherwise,
                 };
+
+                // log!("    it becomes {:?}", next_cell);
 
                 next[idx] = next_cell;
             }

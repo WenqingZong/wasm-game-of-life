@@ -1,6 +1,6 @@
 import init, { Cell, Universe } from "./dist/wasm_game_of_life.js";
 
-const CELL_SIZE = 5; // px
+const CELL_SIZE = 10; // px
 const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
@@ -65,6 +65,55 @@ const drawCells = () => {
     ctx.stroke();
 };
 
+let animationId = null;
+
+const isPaused = () => {
+    return animationId === null;
+};
+
+const playPauseButton = document.getElementById("play-pause");
+
+const play = () => {
+    playPauseButton.textContent = "⏸";
+    renderLoop();
+};
+
+const pause = () => {
+    playPauseButton.textContent = "▶";
+    cancelAnimationFrame(animationId);
+    animationId = null;
+};
+
+playPauseButton.addEventListener("click", event => {
+    if (isPaused()) {
+        play();
+    } else {
+        pause();
+    }
+});
+
+// Click events on canvas, translate page-relative coordinates into canvas relative coordinates.
+canvas.addEventListener("click", event => {
+    const boundingRect = canvas.getBoundingClientRect();
+
+    const scaleX = canvas.width / boundingRect.width;
+    const scaleY = canvas.height / boundingRect.height;
+    console.log(scaleX, scaleY);
+
+    const canvasLeft = (event.clientX - boundingRect.left) * scaleX;
+    const canvasTop = (event.clientY - boundingRect.top) * scaleY;
+    console.log(canvasLeft, canvasTop);
+
+    const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
+    const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
+    console.log(row, col);
+
+    universe.toggle_cell(row, col);
+
+    drawGrid();
+    drawCells();
+});
+
 // On each iteration, JS draws the current universe to the <pre>, and then calls Universe::tick.
 const renderLoop = () => {
     universe.tick();
@@ -72,10 +121,10 @@ const renderLoop = () => {
     drawGrid();
     drawCells();
 
-    requestAnimationFrame(renderLoop);
+    animationId = requestAnimationFrame(renderLoop);
 };
 
 // Start the first iteration.
 drawGrid();
 drawCells();
-requestAnimationFrame(renderLoop);
+play();

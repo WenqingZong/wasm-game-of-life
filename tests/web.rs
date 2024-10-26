@@ -22,6 +22,7 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
+    #[test]
     pub fn test_tick() {
         // Let's create a smaller Universe with a small spaceship to test!
         let mut input_universe = input_spaceship();
