@@ -20,6 +20,10 @@ jobs:
       - name: Rustfmt
         run: cargo fmt --check
 
+      - uses: actions/setup-node@v2
+        with:
+          node-version: latest
+
       - name: Install wasm-pack
         run: |
           rustup target add wasm32-unknown-unknown
