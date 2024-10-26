@@ -27,9 +27,7 @@ jobs:
           cargo install wasm-bindgen-cli
 
       - name: Test
-        run: |
-          cargo test
-          wasm-pack test --node
+        run: wasm-pack test --node
 
       - name: Build
         run: wasm-pack build --target web --out-dir www/dist
