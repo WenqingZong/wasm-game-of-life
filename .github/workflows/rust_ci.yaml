@@ -26,7 +26,7 @@ jobs:
       - name: Test
         run: |
           cargo test
-          wasm-pack test --node --headless
+          wasm-pack test --node
 
 
       - name: Build
