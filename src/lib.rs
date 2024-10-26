@@ -23,9 +23,15 @@ impl Display for Universe {
                 let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
                 write!(f, "{}", symbol)?;
             }
-            write!(f, "\n")?;
+            writeln!(f)?;
         }
         Ok(())
+    }
+}
+
+impl Default for Universe {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -51,6 +57,18 @@ impl Universe {
             height,
             cells,
         }
+    }
+
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
+    }
+
+    pub fn cells(&self) -> *const Cell {
+        self.cells.as_ptr()
     }
 
     pub fn render(&self) -> String {
