@@ -18,7 +18,7 @@ pub struct Universe {
 
 impl Display for Universe {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
-        for line in self.cells.as_slice().chunks(self.width as usize) {
+        for line in self.cells.as_slice().chunks(self.width) {
             for &cell in line {
                 let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
                 write!(f, "{}", symbol)?;
@@ -29,7 +29,34 @@ impl Display for Universe {
     }
 }
 
+/// Public methods, exported to JavaScript.
+#[wasm_bindgen]
 impl Universe {
+    pub fn new() -> Universe {
+        let width = 64;
+        let height = 64;
+
+        let cells = (0..width * height)
+            .map(|i| {
+                if i % 2 == 0 || i % 7 == 0 {
+                    Cell::Alive
+                } else {
+                    Cell::Dead
+                }
+            })
+            .collect();
+
+        Universe {
+            width,
+            height,
+            cells,
+        }
+    }
+
+    pub fn render(&self) -> String {
+        self.to_string()
+    }
+
     fn get_index(&self, row: usize, column: usize) -> usize {
         row * self.width + column
     }
