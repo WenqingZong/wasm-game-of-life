@@ -16,3 +16,6 @@ crate-type = ["cdylib", "rlib"]
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.45"
+
+[profile.release]
+lto = true
