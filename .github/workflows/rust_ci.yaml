@@ -1,0 +1,40 @@
+name: Rust CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build_and_test:
+    name: Rust project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt clippy
+
+      - name: Rustfmt
+        run: cargo fmt --check
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '23'
+
+      - name: Install wasm-pack
+        run: |
+          rustup target add wasm32-unknown-unknown
+          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+          cargo install wasm-bindgen-cli
+
+      - name: Test
+        run: wasm-pack test --node
+
+      - name: Build
+        run: wasm-pack build --target web --out-dir www/dist
+
+      - name: Clippy
+        run: cargo clippy
